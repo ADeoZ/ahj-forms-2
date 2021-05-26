@@ -6,18 +6,19 @@ export default class CRM {
     this.table = element.querySelector('.crm_table');
     this.add = element.querySelector('.crm_add');
     this.items = [];
-    this.items = [new Item('IPhone', 60000), new Item('Xiaomi', 20000)];
 
     this.modal = new Modal();
-    this.modal.createModal();
 
-    this.showModal = this.showModal.bind(this);
     this.addItem = this.addItem.bind(this);
     this.changeItem = this.changeItem.bind(this);
   }
 
   init() {
-    this.add.addEventListener('click', this.showModal);
+    this.add.addEventListener('click', () => {
+      this.modal.createModal();
+      this.modal.showModal(this.addItem);
+    });
+
     this.showTable();
   }
 
@@ -34,13 +35,8 @@ export default class CRM {
     this.table.addEventListener('click', this.changeItem);
   }
 
-  showModal() {
-    this.modal.createModal();
-    this.modal.showModal(this.addItem);
-  }
-
   addItem() {
-    const item = new Item(this.modal.inputName.value, this.modal.inputCost.value);
+    const item = new Item(this.modal.inputName.value, +this.modal.inputCost.value);
     this.items.push(item);
     this.modal.closeModal();
     this.showTable();
@@ -52,7 +48,8 @@ export default class CRM {
       const item = this.items.find((itemFind) => itemFind.node === targetNode);
       this.modal.createModal();
       this.modal.showModal(this.editItem.bind(this, item), item);
-    } else if (event.target.classList.contains('crm_delete')) {
+    }
+    if (event.target.classList.contains('crm_delete')) {
       this.deleteItem(event);
     }
   }

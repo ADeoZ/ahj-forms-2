@@ -6,9 +6,9 @@ export default class Modal {
   createModal() {
     this.modal = document.createElement('div');
     this.modal.classList.add('crm_modal');
-    this.modal.innerHTML = `<form class="crm_form">
-    <div>Название</div><input type="text" name="item-name" class="item_name" required>
-    <div>Стоимость</div><input type="text" name="item-cost" class="item_cost" pattern="[1-9][0-9]*" required>
+    this.modal.innerHTML = `<form class="crm_form" novalidate>
+    <div class="label">Название<input type="text" name="item-name" class="item_name" required></div>
+    <div class="label">Стоимость<input type="text" name="item-cost" class="item_cost" pattern="[1-9][0-9]*" required></div>
     <div class="controls">
       <button>Сохранить</button>
       <button type="button" class="close">Отмена</button>
@@ -24,6 +24,8 @@ export default class Modal {
   showModal(callback, item) {
     document.body.appendChild(this.modal);
     this.close.addEventListener('click', this.closeModal);
+    const allInputs = this.form.querySelectorAll('input');
+    [...allInputs].forEach((input) => input.addEventListener('focus', Modal.removeError));
 
     if (item) {
       this.inputName.value = item.name;
@@ -37,8 +39,35 @@ export default class Modal {
   }
 
   checkValidity(callback, event) {
-    console.log('проверяем');
     event.preventDefault();
+
+    const isValid = event.currentTarget.checkValidity();
+    if (!isValid) {
+      if (!this.inputName.validity.valid) {
+        Modal.showError(this.inputName, 'введите название товара');
+      }
+      if (!this.inputCost.validity.valid) {
+        Modal.showError(this.inputCost, 'стоимость должна быть числом больше 0');
+      }
+      return;
+    }
+
     callback();
+  }
+
+  static showError(targetNode, message) {
+    const error = document.createElement('div');
+    error.classList.add('error');
+    error.innerText = message;
+    targetNode.closest('div').append(error);
+    error.style.left = `${targetNode.offsetLeft + targetNode.offsetWidth / 2 - error.offsetWidth / 2}px`;
+    error.style.top = `${targetNode.offsetTop + targetNode.offsetHeight}px`;
+  }
+
+  static removeError(event) {
+    const error = event.currentTarget.closest('div').querySelector('.error');
+    if (error) {
+      error.remove();
+    }
   }
 }

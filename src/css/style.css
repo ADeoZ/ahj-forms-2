@@ -63,7 +63,11 @@ body {
     border: 1px #5f5f5f solid;
     border-radius: 5px;
     padding: 20px;
-    font-size: 18px;
+}
+
+.crm_form .label {
+    position: relative;
+    font-size: 20px;
 }
 
 .crm_form input {
@@ -88,6 +92,12 @@ body {
     font-size: 18px;
 }
 
-body {
-    height: 1800px;
+.crm_form .error {
+    position: absolute;
+    width: 300px;
+    box-sizing: border-box;
+    background-color: brown;
+    color: #ffffff;
+    font-size: 13px;
+    text-align: center;
 }
