@@ -1,28 +1,23 @@
 import Item from './Item';
+import Modal from './Modal';
 
 export default class CRM {
   constructor(element) {
     this.table = element.querySelector('.crm_table');
     this.add = element.querySelector('.crm_add');
-    this.modal = element.querySelector('.crm_modal');
-    this.form = this.modal.querySelector('.crm_modal .crm_form');
-    this.inputName = this.form.querySelector('.item_name');
-    this.inputCost = this.form.querySelector('.item_cost');
-    this.close = this.modal.querySelector('.crm_modal .close');
     this.items = [];
-
     this.items = [new Item('IPhone', 60000), new Item('Xiaomi', 20000)];
 
+    this.modal = new Modal();
+    this.modal.createModal();
+
     this.showModal = this.showModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
     this.addItem = this.addItem.bind(this);
     this.changeItem = this.changeItem.bind(this);
-    // this.editItem = this.editItem.bind(this);
   }
 
   init() {
     this.add.addEventListener('click', this.showModal);
-    this.close.addEventListener('click', this.closeModal);
     this.showTable();
   }
 
@@ -39,47 +34,35 @@ export default class CRM {
     this.table.addEventListener('click', this.changeItem);
   }
 
-  showModal(event) {
-    this.modal.classList.toggle('active');
-
-    if (!event.target.classList.contains('crm_edit')) {
-      this.form.addEventListener('submit', this.addItem);
-    } else {
-      const targetNode = event.target.closest('tr');
-      const item = this.items.find((itemFind) => itemFind.node === targetNode);
-      this.inputName.value = item.name;
-      this.inputCost.value = item.cost;
-      this.form.addEventListener('submit', this.editItem.bind(null, targetNode));
-    }
+  showModal() {
+    this.modal.createModal();
+    this.modal.showModal(this.addItem);
   }
 
-  closeModal() {
-    this.modal.classList.toggle('active');
-    this.inputName.value = '';
-    this.inputCost.value = '';
-  }
-
-  addItem(event) {
-    event.preventDefault();
-    const item = new Item(this.inputName.value, this.inputCost.value);
+  addItem() {
+    const item = new Item(this.modal.inputName.value, this.modal.inputCost.value);
     this.items.push(item);
-    this.closeModal();
+    this.modal.closeModal();
     this.showTable();
   }
 
   changeItem(event) {
     if (event.target.classList.contains('crm_edit')) {
-      this.showModal(event);
+      const targetNode = event.target.closest('tr');
+      const item = this.items.find((itemFind) => itemFind.node === targetNode);
+      this.modal.createModal();
+      this.modal.showModal(this.editItem.bind(this, item), item);
     } else if (event.target.classList.contains('crm_delete')) {
       this.deleteItem(event);
     }
   }
 
-  editItem(targetNode, event) {
-    event.preventDefault();
-    console.log('редактирование');
-    // arr[0].preventDefault();
-    console.log(targetNode);
+  editItem(target) {
+    const item = target;
+    item.name = this.modal.inputName.value;
+    item.cost = +this.modal.inputCost.value;
+    this.modal.closeModal();
+    this.showTable();
   }
 
   deleteItem(event) {

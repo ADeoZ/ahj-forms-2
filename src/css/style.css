@@ -40,7 +40,7 @@ body {
 }
 
 .crm_modal {
-    display: none;
+    display: flex;
     position: fixed;
     left: 0;
     top: 0;
@@ -51,9 +51,9 @@ body {
     background: rgba(0, 0, 0, 0.5);
 }
 
-.crm_modal.active {
+/* .crm_modal.active {
     display: flex;
-}
+} */
 
 .crm_form {
     width: 300px;
